@@ -3,17 +3,25 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreGenreRequest;
+use App\Services\GenreService;
 use Illuminate\Http\Request;
 use App\Models\Genre;
 
 class GenreController extends Controller
 {
+    protected GenreService $genreService;
+
+    public function __construct(GenreService $genreService)
+    {
+        $this->genreService = $genreService;
+    }
+    
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $genres = Genre::all();
+        $genres = $this->genreService->index();
         return response()->json($genres, 200);
     }
 
@@ -22,17 +30,16 @@ class GenreController extends Controller
      */
     public function store(StoreGenreRequest $request)
     {
-        $validatedData = $request->validated();
-        $genre = Genre::create($validatedData);
+        $genre = $this->genreService->create($request->validated());
         return response()->json(['message' => 'Genre created successfully', 'genre' => $genre], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Genre $genre)
     {
-        //
+        return response()->json($genre, 200);
     }
 
     /**
@@ -40,8 +47,7 @@ class GenreController extends Controller
      */
     public function update(StoreGenreRequest $request, Genre $genre)
     {
-        $validatedData = $request->validated();
-        $genre->update($validatedData);
+        $genre->update($request->validated());
         return response()->json(['message' => 'Genre updated successfully', 'genre' => $genre], 200);
     }
 
@@ -50,7 +56,13 @@ class GenreController extends Controller
      */
     public function destroy(Genre $genre)
     {
-        $genre->delete();
-        return response()->json(['message' => 'Genre deleted successfully'], 200);
+        if ($this->genreService->delete($genre)) 
+        {
+            return response()->json(['message' => 'Genre deleted successfully'], 200);
+        } 
+        else 
+        {
+            return response()->json(['message' => 'Genre could not be deleted'], 400);
+        }
     }
 }

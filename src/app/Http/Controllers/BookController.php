@@ -2,21 +2,27 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Requests\StoreBookRequest;
 use App\Models\Book;
 use App\Models\Author;
 use App\Models\Genre;
+use App\Services\BookService;
 
 class BookController extends Controller
 {
+    protected BookService $bookService;
+
+    public function __construct(BookService $bookService)
+    {
+        $this->bookService = $bookService;
+    }
+
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        $books = Book::all();
-        return response()->json($books, 200);
+        return $this->bookService->index();
     }
 
     /**
@@ -24,8 +30,7 @@ class BookController extends Controller
      */
     public function store(StoreBookRequest $request)
     {
-        $validatedData = $request->validated();
-        $book = Book::create($validatedData);
+        $book = $this->bookService->create($request->validated());
         return response()->json(['message' => 'Book created successfully', 'book' => $book], 201);
     }
 
@@ -42,8 +47,7 @@ class BookController extends Controller
      */
     public function update(StoreBookRequest $request, Book $book)
     {
-        $validatedData = $request->validated();
-        $book->update($validatedData);
+        $updated = $this->bookService->update($book, $request->validated());
         return response()->json(['message' => 'Book updated successfully', 'book' => $book], 200);
     }
 
@@ -52,18 +56,21 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        $book->delete();
-        return response()->json(['message' => 'Book deleted successfully'], 200);
+        if ($this->bookService->delete($book)) {
+            return response()->json(['message' => 'Book deleted successfully'], 200);
+        } else {
+            return response()->json(['message' => 'Failed to delete book'], 500);
+        }
     }
 
     public function getBooksByAuthor(Author $author)
     {
-        $books = Book::where('author_id', $author->id)->get();
+        $books = $this->bookService->getBooksByAuthor($author);
         return response()->json($books, 200);
     }
     public function getBooksByGenre(Genre $genre)
     {
-        $books = Book::where('genre_id', $genre->id)->get();
+        $books = $this->bookService->getBooksByGenre($genre);
         return response()->json($books, 200);
     }
 }

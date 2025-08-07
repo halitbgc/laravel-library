@@ -26,7 +26,7 @@ class UserController extends Controller
     {
         $validatedData = $request->validated();
         $user = User::create($validatedData);
-        $user->assignRole(roles: 'calisan'); // Default role for new users
+        $user->assignRole(roles: 'employee'); // Default role for new users
         return response()->json(['message' => 'User created successfully', 'user' => $user], 201);
     }
     
