@@ -5,12 +5,24 @@ use App\Models\Book;
 use Illuminate\Support\Facades\DB;
 use App\Models\Author;
 use App\Models\Genre;
+use Illuminate\Database\Eloquent\Collection;
 class BookService
 {
-    public function index(): \Illuminate\Database\Eloquent\Collection
+    public function index(): Collection
     {
-        return Book::all();
+        return Book::with([
+            'author:id,name',
+            'genre:id,name'
+        ])->get();
     }
+    public function show(Book $book): Book
+    {
+        return $book->load([
+            'author:id,name',
+            'genre:id,name'
+        ]);
+    }
+    
     public function create(array $data): Book
     {
         return Book::create($data);
@@ -24,6 +36,10 @@ class BookService
     public function delete(Book $book): bool
     {
         return $book->delete();
+    }
+    public function countBooks(): int
+    {
+        return Book::count();
     }
     public function getBooksByAuthor(Author $author): \Illuminate\Database\Eloquent\Collection
     {

@@ -39,7 +39,8 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        return response()->json($book, 200);
+        $serviceBook = $this->bookService->show($book);
+        return response()->json($serviceBook, 200);
     }
 
     /**

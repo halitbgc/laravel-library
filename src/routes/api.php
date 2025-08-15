@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\BookController;
 use App\Http\Controllers\AuthorController;
@@ -19,7 +20,10 @@ Route::middleware('auth:api')->group(function () {
 
     // admin
     Route::middleware('role:admin')->group(function () {
-       Route::apiResource('users', UserController::class);
+        Route::get('users/employees', [UserController::class, 'getAllEmployees']);
+        Route::get('users/visitors', [UserController::class, 'getAllVisitors']);
+        Route::apiResource('users', UserController::class);
+        Route::get('dashboard', [DashboardController::class, 'index']);
     });
 
     // employee + admin
@@ -33,12 +37,17 @@ Route::middleware('auth:api')->group(function () {
         Route::put('genres/{genre}', [GenreController::class, 'update']);
 
         Route::post('books', [BookController::class, 'store']);
-        Route::delete('books/{book}/delete', [BookController::class, 'destroy']);
+        Route::delete('books/{book}', [BookController::class, 'destroy']);
         Route::put('books/{book}', [BookController::class, 'update']);
 
         // Loan management
+        Route::get('loans_approved', [LoanController::class, 'getApprovedLoans']);
+        Route::get('loans/borrowed', [LoanController::class, 'getBorrowedLoans']);
         Route::get('loans', [LoanController::class, 'index']);
         Route::get('loans/{loan}', [LoanController::class, 'show']);
+        
+        Route::put('loans/{loan}/returned', [LoanController::class, 'returnLoan']);
+        Route::put('loans/{loan}/borrowed', [LoanController::class, 'borrowedLoan']);
         Route::put('loans/{loan}/approve', [LoanController::class, 'approveLoan']);
         Route::put('loans/{loan}/reject', [LoanController::class, 'rejectLoan']);
 
@@ -59,5 +68,6 @@ Route::middleware('auth:api')->group(function () {
         
         // Loan request
         Route::post('/loans', [LoanController::class, 'requestLoan']);
+        Route::get('/myLoans', [LoanController::class, 'getLoansByUserId']);
     });
 });

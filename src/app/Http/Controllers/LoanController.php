@@ -8,7 +8,7 @@ use App\Models\Loan;
 use App\Services\LoanService;
 class LoanController extends Controller
 {
-    protected $loanService;
+    protected LoanService $loanService;
     public function __construct(LoanService $loanService)
     {
         $this->loanService = $loanService;
@@ -19,6 +19,18 @@ class LoanController extends Controller
     public function index()
     {
         $loans = $this->loanService->getAllLoans();
+        return response()->json($loans);
+    }
+
+    public function getApprovedLoans()
+    {
+        $loans = $this->loanService->getApprovedLoans();
+        return response()->json($loans);
+    }
+
+    public function getBorrowedLoans()
+    {
+        $loans = $this->loanService->getBorrowedLoans();
         return response()->json($loans);
     }
 
@@ -40,6 +52,21 @@ class LoanController extends Controller
         $loanData = $this->loanService->show($loan);
 
         return response()->json($loanData);
+    }
+
+    public function borrowedLoan(Loan $loan)
+    {
+        $loan = $this->loanService->borrowedLoan($loan->id);
+
+        if ($loan) {
+            return response()->json([
+                'message' => 'Loan borrowed successfully.',
+                'loan' => $loan,
+            ]);
+        }
+        return response()->json([
+            'message' => 'Loan could not be borrowed.',
+        ], 400);
     }
 
     /**
@@ -72,5 +99,25 @@ class LoanController extends Controller
         return response()->json([
             'message' => 'Loan request could not be rejected.',
         ], 400);
+    }
+
+    /**
+     * Return a loan.
+     */
+    public function returnLoan(Loan $loan) {
+        if ($this->loanService->returnLoan($loan->id)) {
+            return response()->json([
+                'message' => 'Loan returned successfully.',
+                'loan' => $loan,
+            ]);
+        }
+        return response()->json([
+            'message' => 'Loan could not be returned.',
+        ], 400);
+    }
+
+    public function getLoansByUserId() {
+        $loans = $this->loanService->getLoansByUserId(auth()->id());
+        return response()->json($loans);
     }
 }

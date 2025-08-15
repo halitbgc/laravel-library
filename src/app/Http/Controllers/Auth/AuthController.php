@@ -38,10 +38,10 @@ class AuthController extends Controller
         $request->validated();
 
         if (!$token = Auth::guard('api')->attempt(['email' => $request['email'], 'password' => $request['password']])) {
-            return response()->json(['error' => 'Unauthorized'], 401);
+            return response()->json(['error' => 'Unauthorized!'], 401);
         }
 
-        return response()->json(['access_token' => $token, 'token_type' => 'Bearer']);
+        return response()->json(['access_token' => $token, 'token_type' => 'Bearer', 'role' => auth()->user()->getRoleNames()->first()], 200);
     }
 
     public function logout()

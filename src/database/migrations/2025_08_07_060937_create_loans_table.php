@@ -24,7 +24,7 @@ return new class extends Migration
             $table->foreignId('approved_by')->nullable(); // user id of the librarian who approved the loan request
             $table->timestamp('approved_at')->nullable(); // loan request approved date
             
-            $table->enum('status', ['pending', 'approved', 'rejected', 'returned'])->default('pending');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'returned', 'borrowed'])->default('pending');
 
             $table->timestamps();
         });
