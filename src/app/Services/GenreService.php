@@ -14,13 +14,15 @@ class GenreService
         return Genre::create($data);
     }
 
-    public function update(Genre $genre, array $data): Genre
+    public function update(int $genreId, array $data): Genre
     {
+        $genre = Genre::findOrFail($genreId);
         $genre->update($data);
         return $genre;
     }
-    public function delete(Genre $genre): bool
+    public function delete(int $genreId): bool
     {
+        $genre = Genre::findOrFail($genreId);
         return $genre->delete();
     }
 }

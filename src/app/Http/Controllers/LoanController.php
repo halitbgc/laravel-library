@@ -47,9 +47,9 @@ class LoanController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Loan $loan)
+    public function show(int $loanId)
     {
-        $loanData = $this->loanService->show($loan);
+        $loanData = $this->loanService->show($loanId);
 
         return response()->json($loanData);
     }
@@ -72,12 +72,11 @@ class LoanController extends Controller
     /**
      * Approve a loan request.
      */
-    public function approveLoan(Loan $loan)
+    public function approveLoan(int $loanId)
     {
-        if ($this->loanService->approve($loan)) {
+        if ($this->loanService->approve($loanId)) {
             return response()->json([
                 'message' => 'Loan request approved successfully.',
-                'loan' => $loan,
             ]);
         }
         return response()->json([

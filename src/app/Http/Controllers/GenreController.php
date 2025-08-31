@@ -54,9 +54,9 @@ class GenreController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Genre $genre)
+    public function destroy(int $genreId)
     {
-        if ($this->genreService->delete($genre)) 
+        if ($this->genreService->delete($genreId)) 
         {
             return response()->json(['message' => 'Genre deleted successfully'], 200);
         } 

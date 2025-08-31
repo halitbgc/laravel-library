@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Requests\StoreBookRequest;
+use App\Http\Resources\BookResource;
 use App\Models\Book;
 use App\Models\Author;
 use App\Models\Genre;
@@ -22,7 +23,8 @@ class BookController extends Controller
      */
     public function index()
     {
-        return $this->bookService->index();
+        $books = $this->bookService->index();
+        return BookResource::collection($books);
     }
 
     /**
@@ -31,33 +33,33 @@ class BookController extends Controller
     public function store(StoreBookRequest $request)
     {
         $book = $this->bookService->create($request->validated());
-        return response()->json(['message' => 'Book created successfully', 'book' => $book], 201);
+        return response()->json(['message' => 'Book created successfully'], 201);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Book $book)
+    public function show(int $bookId)
     {
-        $serviceBook = $this->bookService->show($book);
-        return response()->json($serviceBook, 200);
+        $book = $this->bookService->show($bookId);
+        return BookResource::make($book);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(StoreBookRequest $request, Book $book)
+    public function update(StoreBookRequest $request, int $bookId)
     {
-        $updated = $this->bookService->update($book, $request->validated());
-        return response()->json(['message' => 'Book updated successfully', 'book' => $book], 200);
+        $book = $this->bookService->update($bookId, $request->validated());
+        return response()->json(['message' => 'Book updated successfully'], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Book $book)
+    public function destroy(int $bookId)
     {
-        if ($this->bookService->delete($book)) {
+        if ($this->bookService->delete($bookId)) {
             return response()->json(['message' => 'Book deleted successfully'], 200);
         } else {
             return response()->json(['message' => 'Failed to delete book'], 500);
@@ -67,11 +69,11 @@ class BookController extends Controller
     public function getBooksByAuthor(Author $author)
     {
         $books = $this->bookService->getBooksByAuthor($author);
-        return response()->json($books, 200);
+        return BookResource::collection($books);
     }
     public function getBooksByGenre(Genre $genre)
     {
         $books = $this->bookService->getBooksByGenre($genre);
-        return response()->json($books, 200);
+        return BooksResource::collection($books);
     }
 }

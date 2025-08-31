@@ -93,8 +93,9 @@ class LoanService
         return $loan;
     }
 
-    public function show(Loan $loan): array
+    public function show(int $loanId): array
     {
+        $loan = Loan::findOrFail($loanId);
         $loan->load([
             'user:id,name,surname,email',
             'book:id,name,published_year,author_id,genre_id',
@@ -140,8 +141,9 @@ class LoanService
     }
     
 
-    public function approve(Loan $loan): bool
+    public function approve(int $loanId): bool
     {
+        $loan = Loan::find($loanId);
         $loan->status = 'approved';
         $loan->approved_at = now();
         $loan->approved_by = auth()->id();
